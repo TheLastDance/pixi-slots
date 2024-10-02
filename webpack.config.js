@@ -3,7 +3,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-    entry: ['core-js/stable', './src/index.ts'],
+    entry: ['./src/index.ts'],
     mode: "development",
     output: {
         path: path.resolve(__dirname, 'build'),
