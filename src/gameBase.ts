@@ -1,5 +1,6 @@
-import { Application, Renderer } from "pixi.js";
+import { Application, Renderer, Text } from "pixi.js";
 import { Loading } from "./loading";
+import { SlotReel } from "./slotReel";
 
 export class GameBase {
   app: Application<Renderer>;
@@ -30,6 +31,45 @@ export class GameBase {
       this.root.appendChild(this.app.canvas);
       const load = new Loading(this.app);
       load.loadInit();
+
+      const reel = new SlotReel(this.app);
+      reel.createReelContainer();
+
+      const text = new Text({
+        text: this.value,
+        style: {
+          fontFamily: 'Arial',
+          fontSize: 24,
+          fill: 0xff1010,
+          align: 'center',
+        }
+      });
+
+      this.app.stage.addChild(text);
+      text.position.set(0, 0);
+      text.eventMode = "static";
+      text.cursor = "pointer";
+
+      text.on("pointerdown", () => {
+        this.value = this.value + 1;
+        text.text = this.value;
+        const container = reel.container;
+        container.y = 0;
+        const speed = 7.5; // Scrolling speed
+
+        const scrollTicker = () => {
+          if (container.y > -150 * (20 - 1 - 2)) {
+            container.y -= speed;
+            text.interactive = false;
+          } else {
+            this.app.ticker.remove(scrollTicker);
+            text.interactive = true;
+            reel.consctructNewReel();
+          }
+        }
+
+        this.app.ticker.add(scrollTicker);
+      })
 
     })()
   }

@@ -25,3 +25,11 @@ export const assetsData: IAssetsData[] = [
     src: "./assets/watermelon.png",
   }
 ]
+
+export const slotItemIds = {
+  1: "plum",
+  2: "orange",
+  3: "lemon",
+  4: "cherries",
+  5: "watermelon",
+}
