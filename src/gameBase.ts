@@ -1,6 +1,16 @@
 import { Application, Renderer, Text } from "pixi.js";
 import { Loading } from "./loading";
-import { SlotReel } from "./slotReel";
+import { SlotBuilder } from "./slotBuilder";
+import { CONSTANTS } from "./data";
+
+const {
+  SLOTSTRIPEFULLSIZE,
+  SYMBOLSPERREELVIEW,
+  SYMBOLSREELQUANTITY,
+  SLOTSSPEED,
+  SPEEDLIMIT,
+  SPEEDSTEP
+} = CONSTANTS;
 
 export class GameBase {
   app: Application<Renderer>;
@@ -21,10 +31,10 @@ export class GameBase {
   init() {
     (async () => {
       await this.app.init({
-        backgroundColor: "#ff0",
+        backgroundColor: "#000",
         width: 900,
         height: 600,
-        // resizeTo: window,
+        //resizeTo: window,
       });
 
 
@@ -32,11 +42,11 @@ export class GameBase {
       const load = new Loading(this.app);
       load.loadInit();
 
-      const reel = new SlotReel(this.app);
-      reel.createReelContainer();
+      const reels = new SlotBuilder(this.app);
+      reels.createSlotMachine();
 
       const text = new Text({
-        text: this.value,
+        text: `PRESS ME ${this.value}`,
         style: {
           fontFamily: 'Arial',
           fontSize: 24,
@@ -52,19 +62,22 @@ export class GameBase {
 
       text.on("pointerdown", () => {
         this.value = this.value + 1;
-        text.text = this.value;
-        const container = reel.container;
-        container.y = 0;
-        const speed = 7.5; // Scrolling speed
+        text.text = `PRESS ME ${this.value}`;
+        const container = reels.container;
+        const containerInitialY = container.y;
+        const speed = SLOTSSPEED; // Scrolling speed
+        let speedChange = 1;
 
         const scrollTicker = () => {
-          if (container.y > -150 * (20 - 1 - 2)) {
-            container.y -= speed;
+          const containerLastPoint = -SLOTSTRIPEFULLSIZE * (SYMBOLSREELQUANTITY - SYMBOLSPERREELVIEW) + containerInitialY;
+          if (container.y > containerLastPoint) {
+            if (speedChange > SPEEDLIMIT) speedChange -= SPEEDSTEP;
+            container.position.y -= speed * speedChange;
             text.interactive = false;
           } else {
             this.app.ticker.remove(scrollTicker);
             text.interactive = true;
-            reel.consctructNewReel();
+            reels.constructNewSlotMachine();
           }
         }
 

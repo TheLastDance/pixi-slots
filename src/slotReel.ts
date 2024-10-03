@@ -1,5 +1,15 @@
-import { Application, Renderer, Container, Assets, Sprite, Graphics } from "pixi.js";
+import { Application, Renderer, Container, Assets, Sprite } from "pixi.js";
 import { slotItemIds } from "./data";
+import { CONSTANTS } from "./data";
+
+const {
+  WIDTH,
+  HEIGHT,
+  SYMBOLSQUANTITY,
+  SYMBOLSREELQUANTITY,
+  SYMBOLSPERREELVIEW,
+  SLOTSTRIPEFULLSIZE
+} = CONSTANTS;
 
 type SlotItemIdsKeys = keyof typeof slotItemIds;
 
@@ -9,16 +19,12 @@ export class SlotReel {
   symbolQuantity: number;
   reel: SlotItemIdsKeys[];
   container: Container = new Container();
-  private mask: Graphics;
 
-  constructor(app: Application<Renderer>, length = 20, symbolQuantity = 5) {
+  constructor(app: Application<Renderer>, length = SYMBOLSREELQUANTITY, symbolQuantity = SYMBOLSQUANTITY) {
     this.app = app;
     this.length = length;
     this.symbolQuantity = symbolQuantity;
     this.reel = this.generateReel();
-    this.mask = new Graphics()
-      .rect(0, 0, 135, 150 * 3)
-      .fill(0xff0000);
   }
 
   generateReel(length: number = this.length) {
@@ -33,50 +39,38 @@ export class SlotReel {
   }
 
   createReelContainer(reel: SlotItemIdsKeys[] = this.reel, posRatio: number = 0) {
-    console.log(this.reel)
-
     const spriteBulder = async () => {
       const promises = reel.map((slot) => Assets.load(slotItemIds[slot]));
       const assets = await Promise.all(promises);
 
       assets.forEach(async (slot, index) => {
         const sprite = new Sprite(slot);
-        sprite.width = 135;
-        sprite.height = 135;
+        sprite.width = WIDTH;
+        sprite.height = HEIGHT;
         this.container.addChild(sprite);
-        sprite.position.set(0, (index + posRatio) * 150)
+        sprite.position.set(0, (index + posRatio) * SLOTSTRIPEFULLSIZE)
       });
     }
 
     spriteBulder();
-
-    this.container.mask = this.mask;
     this.app.stage.addChild(this.container);
   }
 
   consctructNewReel() {
-    const lastThreeSprites = this.container.children.slice(-3);
-    const generateReel = this.generateReel(this.length - 3);
-    const newReel = this.reel.slice(-3).concat(generateReel);
+    const lastThreeSprites = this.container.children.slice(-SYMBOLSPERREELVIEW);
+    const generateReel = this.generateReel(this.length - SYMBOLSPERREELVIEW);
+    const newReel = this.reel.slice(-SYMBOLSPERREELVIEW).concat(generateReel);
     this.reel = newReel;
     const newContainer = new Container();
 
     lastThreeSprites.forEach((sprite, index) => {
-      sprite.position.set(0, index * 150);
+      sprite.position.set(0, index * SLOTSTRIPEFULLSIZE);
       newContainer.addChild(sprite);
     });
 
     this.container.destroy({ children: true });
     this.container = newContainer;
 
-    this.createReelContainer(generateReel, 3);
-  }
-
-  get getContainer() {
-    return this.container;
-  }
-
-  get getReel() {
-    return this.reel;
+    this.createReelContainer(generateReel, SYMBOLSPERREELVIEW);
   }
 }
