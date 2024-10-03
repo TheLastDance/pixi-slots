@@ -15,7 +15,7 @@ export class Loading {
       style: {
         fontFamily: 'Arial',
         fontSize: 40,
-        fill: "#000",
+        fill: "#fff",
       }
     });
 

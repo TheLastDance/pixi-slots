@@ -3,16 +3,19 @@ interface IAssetsData {
   src: string,
 }
 
+export type SlotItemIdsKeys = keyof typeof slotItemIds;
+
 interface IConstants {
   WIDTH: number,
   HEIGHT: number,
   SLOTSTRIPEFULLSIZE: number,
-  SYMBOLSQUANTITY: keyof typeof slotItemIds,
+  SYMBOLSQUANTITY: SlotItemIdsKeys,
   SYMBOLSREELQUANTITY: number,
   SYMBOLSPERREELVIEW: number,
   SLOTSSPEED: number,
   SPEEDLIMIT: number,
   SPEEDSTEP: number,
+  SAMENUMBERSPROBABILITY: number,
   [key: string]: number,
 }
 
@@ -57,4 +60,13 @@ export const CONSTANTS: IConstants = {
   SLOTSSPEED: 7.5,
   SPEEDLIMIT: 0.4,
   SPEEDSTEP: 0.0015,
+  SAMENUMBERSPROBABILITY: 0.9,
+}
+
+export const winningProbabilities: { [key: number]: number } = {
+  1: 0.35, // plum
+  2: 0.25, // orange
+  3: 0.2, // lemon
+  4: 0.125, // cherries
+  5: 0.075, // watermelon
 }

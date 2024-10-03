@@ -1,5 +1,5 @@
 import { Application, Renderer, Container, Assets, Sprite } from "pixi.js";
-import { slotItemIds } from "./data";
+import { slotItemIds, SlotItemIdsKeys } from "./data";
 import { CONSTANTS } from "./data";
 
 const {
@@ -10,8 +10,6 @@ const {
   SYMBOLSPERREELVIEW,
   SLOTSTRIPEFULLSIZE
 } = CONSTANTS;
-
-type SlotItemIdsKeys = keyof typeof slotItemIds;
 
 export class SlotReel {
   app: Application<Renderer>;
@@ -39,7 +37,8 @@ export class SlotReel {
   }
 
   createReelContainer(reel: SlotItemIdsKeys[] = this.reel, posRatio: number = 0) {
-    const spriteBulder = async () => {
+    const spriteBuilder = async () => {
+      console.log(reel[18])
       const promises = reel.map((slot) => Assets.load(slotItemIds[slot]));
       const assets = await Promise.all(promises);
 
@@ -52,7 +51,7 @@ export class SlotReel {
       });
     }
 
-    spriteBulder();
+    spriteBuilder();
     this.app.stage.addChild(this.container);
   }
 
@@ -70,7 +69,5 @@ export class SlotReel {
 
     this.container.destroy({ children: true });
     this.container = newContainer;
-
-    this.createReelContainer(generateReel, SYMBOLSPERREELVIEW);
   }
 }
