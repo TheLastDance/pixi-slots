@@ -36,9 +36,8 @@ export class SlotReel {
     return reel;
   }
 
-  createReelContainer(reel: SlotItemIdsKeys[] = this.reel, posRatio: number = 0) {
+  createReelContainer(reel: SlotItemIdsKeys[] = this.reel) {
     const spriteBuilder = async () => {
-      console.log(reel[18])
       const promises = reel.map((slot) => Assets.load(slotItemIds[slot]));
       const assets = await Promise.all(promises);
 
@@ -47,7 +46,7 @@ export class SlotReel {
         sprite.width = WIDTH;
         sprite.height = HEIGHT;
         this.container.addChild(sprite);
-        sprite.position.set(0, (index + posRatio) * SLOTSTRIPEFULLSIZE)
+        sprite.position.set(0, index * SLOTSTRIPEFULLSIZE);
       });
     }
 

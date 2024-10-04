@@ -16,6 +16,8 @@ interface IConstants {
   SPEEDLIMIT: number,
   SPEEDSTEP: number,
   SAMENUMBERSPROBABILITY: number,
+  BET: number,
+  INITIALMONEY: number,
   [key: string]: number,
 }
 
@@ -60,7 +62,9 @@ export const CONSTANTS: IConstants = {
   SLOTSSPEED: 7.5,
   SPEEDLIMIT: 0.4,
   SPEEDSTEP: 0.0015,
-  SAMENUMBERSPROBABILITY: 0.9,
+  SAMENUMBERSPROBABILITY: 0.1,
+  BET: 1,
+  INITIALMONEY: 100,
 }
 
 export const winningProbabilities: { [key: number]: number } = {
@@ -69,4 +73,12 @@ export const winningProbabilities: { [key: number]: number } = {
   3: 0.2, // lemon
   4: 0.125, // cherries
   5: 0.075, // watermelon
+}
+
+export const winMultiplier = {
+  1: 3, // plum
+  2: 5, // orange
+  3: 10, // lemon
+  4: 15, // cherries
+  5: 50, // watermelon
 }

@@ -1,16 +1,6 @@
-import { Application, Renderer, Text } from "pixi.js";
+import { Application, Renderer } from "pixi.js";
 import { Loading } from "./loading";
-import { SlotBuilder } from "./slotBuilder";
-import { CONSTANTS } from "./data";
-
-const {
-  SLOTSTRIPEFULLSIZE,
-  SYMBOLSPERREELVIEW,
-  SYMBOLSREELQUANTITY,
-  SLOTSSPEED,
-  SPEEDLIMIT,
-  SPEEDSTEP
-} = CONSTANTS;
+import { SlotMachine } from "./slotMachine";
 
 export class GameBase {
   app: Application<Renderer>;
@@ -37,52 +27,11 @@ export class GameBase {
         //resizeTo: window,
       });
 
-
       this.root.appendChild(this.app.canvas);
       const load = new Loading(this.app);
       load.loadInit();
-
-      const reels = new SlotBuilder(this.app);
-      reels.createSlotMachine();
-
-      const text = new Text({
-        text: `PRESS ME ${this.value}`,
-        style: {
-          fontFamily: 'Arial',
-          fontSize: 24,
-          fill: 0xff1010,
-          align: 'center',
-        }
-      });
-
-      this.app.stage.addChild(text);
-      text.position.set(0, 0);
-      text.eventMode = "static";
-      text.cursor = "pointer";
-
-      text.on("pointerdown", () => {
-        this.value = this.value + 1;
-        text.text = `PRESS ME ${this.value}`;
-        const container = reels.container;
-        const containerInitialY = container.y;
-        const speed = SLOTSSPEED; // Scrolling speed
-        let speedChange = 1;
-
-        const scrollTicker = () => {
-          const containerLastPoint = -SLOTSTRIPEFULLSIZE * (SYMBOLSREELQUANTITY - SYMBOLSPERREELVIEW) + containerInitialY;
-          if (container.y > containerLastPoint) {
-            if (speedChange > SPEEDLIMIT) speedChange -= SPEEDSTEP;
-            container.position.y -= speed * speedChange;
-            text.interactive = false;
-          } else {
-            this.app.ticker.remove(scrollTicker);
-            text.interactive = true;
-            reels.constructNewSlotMachine();
-          }
-        }
-
-        this.app.ticker.add(scrollTicker);
-      })
+      const slotMachine = new SlotMachine(this.app);
+      slotMachine.run();
 
     })()
   }

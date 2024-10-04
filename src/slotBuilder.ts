@@ -1,7 +1,7 @@
 import { Application, Container, Renderer, Graphics } from "pixi.js";
 import { SlotReel } from "./slotReel";
 import { CONSTANTS } from "./data";
-import { SlotRandomizer } from "./slotRandomizer";
+import { randomizer } from "./slotRandomizer";
 
 const { SYMBOLSPERREELVIEW, SLOTSTRIPEFULLSIZE, SYMBOLSREELQUANTITY } = CONSTANTS;
 
@@ -26,7 +26,6 @@ export class SlotBuilder {
   }
 
   createSlotMachine() {
-    const randomizer = new SlotRandomizer();
     const mainLine = randomizer.randomizeMain();
 
     this.reels.forEach((reel, index) => {
