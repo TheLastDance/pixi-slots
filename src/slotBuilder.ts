@@ -19,7 +19,7 @@ export class SlotBuilder {
     this.reelCount = reelsCount;
     this.app = app;
     this.posX = this.app.canvas.width / 2 - (this.reelCount * SLOTSTRIPEFULLSIZE) / 2;
-    this.posY = this.app.canvas.height / 2 - (this.reelCount * SLOTSTRIPEFULLSIZE) / 2;
+    this.posY = 0;
     this.mask = new Graphics()
       .rect(this.posX, this.posY, SLOTSTRIPEFULLSIZE * reelsCount, SLOTSTRIPEFULLSIZE * reelsCount)
       .fill(0xff0000);

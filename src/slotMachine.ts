@@ -1,7 +1,8 @@
-import { Application, Renderer, Text } from "pixi.js";
+import { Application, Renderer } from "pixi.js";
 import { SlotBuilder } from "./slotBuilder";
 import { CONSTANTS, winMultiplier, SlotItemIdsKeys } from "./data";
 import { randomizer } from "./slotRandomizer";
+import { uiElements } from "./uiElementsBuilder";
 
 const {
   SLOTSTRIPEFULLSIZE,
@@ -40,27 +41,26 @@ export class SlotMachine {
     const reels = new SlotBuilder(this.app);
     reels.createSlotMachine();
 
-    const text = new Text({
-      text: `PRESS ME ${this.money}`,
-      style: {
-        fontFamily: 'Arial',
-        fontSize: 24,
-        fill: 0xff1010,
-        align: 'center',
-      }
-    });
+    const text = uiElements.creditText!;
+    const activeButton = uiElements.spinButtonActive!;
+    const inactiveButton = uiElements.spinButtonInactive!;
 
-    this.app.stage.addChild(text);
-    text.position.set(0, 0);
-    text.eventMode = "static";
-    text.cursor = "pointer";
+    activeButton.on("pointerdown", () => {
+      activeButton.width = 110;
+      activeButton.height = 110;
+    })
 
-    text.on("pointerdown", () => {
+    activeButton.on("pointerup", () => {
+      activeButton.width = 120;
+      activeButton.height = 120;
+      activeButton.visible = false;
+      inactiveButton.visible = true;
+
       if (!this.isEnoughMoney()) return;
 
       this.placeBet();
 
-      text.text = `PRESS ME ${this.money}`;
+      text.text = `CREDIT ${this.money}`;
       const container = reels.container;
       const containerInitialY = container.y;
       const speed = SLOTSSPEED; // Scrolling speed
@@ -71,14 +71,14 @@ export class SlotMachine {
         if (container.y > containerLastPoint) {
           if (speedChange > SPEEDLIMIT) speedChange -= SPEEDSTEP;
           container.position.y -= speed * speedChange;
-          text.interactive = false;
         } else {
           this.app.ticker.remove(scrollTicker);
-          text.interactive = true;
+          activeButton.visible = true;
+          inactiveButton.visible = false;
           console.log(randomizer.checkWin(), randomizer.mainLine);
           if (randomizer.checkWin()) {
             this.calculateWinAmount(randomizer.mainLine[0]);
-            text.text = `PRESS ME ${this.money}`;
+            text.text = `CREDIT ${this.money}`;
           }
           reels.constructNewSlotMachine();
         }

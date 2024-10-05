@@ -1,6 +1,10 @@
 import { Application, Renderer } from "pixi.js";
 import { Loading } from "./loading";
 import { SlotMachine } from "./slotMachine";
+import { uiElements } from "./uiElementsBuilder";
+import { CONSTANTS } from "./data";
+
+const { INITIALMONEY } = CONSTANTS;
 
 export class GameBase {
   app: Application<Renderer>;
@@ -11,7 +15,7 @@ export class GameBase {
     const root = document.createElement("main");
     document.body.appendChild(root);
     root.style.cssText = "position: absolute; top: 50%; left:50%; transform: translate(-50%,-50%);"
-    document.body.style.cssText = "margin: 0px; padding:0px; width: 100%; height: 100%; overflow: hidden;";
+    document.body.style.cssText = "margin: 0px; padding:0px; width: 100%; height: 100%; overflow: hidden;background-color: #000;";
 
     this.root = root;
     this.app = new Application();
@@ -30,6 +34,15 @@ export class GameBase {
       this.root.appendChild(this.app.canvas);
       const load = new Loading(this.app);
       load.loadInit();
+
+      const ui = uiElements;
+      ui.addDiamondSprite(this.app, true);
+      ui.addDiamondSprite(this.app, false);
+      await ui.addBackground(this.app);
+      await ui.addCredit(this.app, INITIALMONEY);
+      await ui.addSpinButton(this.app);
+      await ui.addSpinButtonInactive(this.app);
+
       const slotMachine = new SlotMachine(this.app);
       slotMachine.run();
 
