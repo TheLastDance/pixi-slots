@@ -22,22 +22,7 @@ module.exports = {
                 test: /\.ts?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
-            },
-            {
-                test: /\.js$/,
-                include: [path.resolve(__dirname, 'src')],
-                loader: 'babel-loader',
-                options: {
-                    presets: [
-                        [
-                            '@babel/preset-env',
-                            {
-                                modules: false,
-                            },
-                        ],
-                    ],
-                },
-            }, //rule
+            }
         ]
     },
     devtool: "source-map",

@@ -7,6 +7,8 @@ export class UiElementsBuilder {
   spinButtonActive: Sprite | null = null;
   spinButtonInactive: Sprite | null = null;
   creditText: Text | null = null;
+  soundOnButton: Sprite | null = null;
+  soundOffButton: Sprite | null = null;
   private buttonMarginCoef = 1.25;
   private downScaleButtonPressCoef = 0.9;
   private popupSize = 450;
@@ -168,6 +170,23 @@ export class UiElementsBuilder {
 
   }
 
+  async soundButton(app: Application) {
+    const soundOn = await this.createSprite("btn-sound");
+    const soundOff = await this.createSprite("btn-no-sound");
+    soundOn.position.set(app.canvas.width - soundOn.width, 0);
+    soundOff.position.set(app.canvas.width - soundOff.width, 0);
+    soundOn.eventMode = "static";
+    soundOff.eventMode = "static";
+    soundOn.interactive = true;
+    soundOff.visible = false;
+    soundOn.cursor = "pointer";
+    soundOff.cursor = "pointer";
+    app.stage.addChild(soundOn, soundOff);
+
+    this.soundOnButton = soundOn;
+    this.soundOffButton = soundOff;
+  }
+
   async buildAllInitialElements(app: Application) {
     this.addDiamondSprite(app, true);
     this.addDiamondSprite(app, false);
@@ -175,6 +194,7 @@ export class UiElementsBuilder {
     await this.addCredit(app, INITIALMONEY);
     await this.addSpinButton(app);
     await this.addSpinButtonInactive(app);
+    await this.soundButton(app);
     this.victoryContainer.position.set(app.canvas.width / 2 - this.popupSize / 2, app.canvas.height / 2 - this.popupSize / 2);
     app.stage.addChild(this.victoryContainer);
   }

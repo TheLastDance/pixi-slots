@@ -25,13 +25,14 @@ export class SlotRandomizer {
 
     if (sameNumbersRand <= this.sameNumbersProbability) {
       const sameNumber = this.wheightedRandomSymbol();
-      result = [sameNumber, sameNumber, sameNumber];
+      result = Array.from({ length: SYMBOLSPERREELVIEW }, () => sameNumber);
     } else {
       for (let i = 0; i < SYMBOLSPERREELVIEW; i++) {
         result.push(this.wheightedRandomSymbol());
       }
     }
 
+    console.log(result)
     this.mainLine = result;
     return result;
   }

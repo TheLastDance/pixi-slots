@@ -110,5 +110,13 @@ export const assetsData: IAssetsData[] = [
   {
     alias: "victory-popup",
     src: "./assets/victory-popup.jpg",
+  },
+  {
+    alias: "btn-sound",
+    src: "./assets/btn-sound.png",
+  },
+  {
+    alias: "btn-no-sound",
+    src: "./assets/btn-no-sound.png",
   }
 ]

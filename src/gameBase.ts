@@ -28,13 +28,14 @@ export class GameBase {
         //resizeTo: window,
       });
 
-
-      window.addEventListener("resize", () => {
+      const resize = () => {
         if (window.innerWidth < 900) {
           this.app.renderer.resize(window.innerWidth, 600 / (900 / window.innerWidth));
           this.app.stage.scale = window.innerWidth / 900;
         }
-      });
+      }
+
+      window.addEventListener("resize", resize);
 
       this.root.appendChild(this.app.canvas);
 
@@ -46,6 +47,8 @@ export class GameBase {
 
       const slotMachine = new SlotMachine(this.app);
       slotMachine.run();
+
+      resize();
 
     })()
   }

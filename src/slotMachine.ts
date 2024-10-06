@@ -3,7 +3,7 @@ import { SlotBuilder } from "./slotBuilder";
 import { CONSTANTS, winMultiplier, SlotItemIdsKeys } from "./data";
 import { randomizer } from "./slotRandomizer";
 import { uiElements } from "./uiElementsBuilder";
-import { sound } from "./Sound";
+import { sound } from "./sound";
 
 const {
   SLOTSTRIPEFULLSIZE,
@@ -21,11 +21,14 @@ export class SlotMachine {
   money: number = INITIALMONEY;
   bet: number = BET;
   private slotBuilder: SlotBuilder;
+  private idle = false;
 
   constructor(app: Application) {
     this.app = app;
     this.slotBuilder = new SlotBuilder(this.app);
   }
+
+  getIdleState = () => this.idle;
 
   isEnoughMoney() {
     return this.money >= this.bet;
@@ -48,6 +51,7 @@ export class SlotMachine {
     const containerLastPoint = -SLOTSTRIPEFULLSIZE * (SYMBOLSREELQUANTITY - SYMBOLSPERREELVIEW) + containerInitialY;
     const speed = SLOTSSPEED; // Scrolling speed
     let speedChange = 1;
+    this.idle = true;
 
     const ticker = () => {
       if (container.y > containerLastPoint) {
@@ -65,6 +69,7 @@ export class SlotMachine {
   spinAnimationStop = async () => {
     sound.spinSound.pause();
     sound.spinSound.currentTime = 0;
+    this.idle = false;
     if (randomizer.checkWin()) {
       const amount = this.calculateWinAmount(randomizer.mainLine[0]);
       sound.runSound(sound.victorySound);
@@ -74,22 +79,35 @@ export class SlotMachine {
     this.slotBuilder.constructNewSlotMachine();
   }
 
+  spinButtonPress() {
+    const activeButton = uiElements.spinButtonActive!;
+    if (this.idle || !this.isEnoughMoney()) return;
+    uiElements.buttonPointerUpEffect(activeButton);
+
+    sound.runSoundLoop(sound.spinSound);
+    uiElements.spinButtonOnPlay();
+
+    this.placeBet();
+
+    this.spinAnimation(this.slotBuilder.container, this.spinAnimationStop);
+  }
+
   run() {
     this.slotBuilder.createSlotMachine();
-
     const activeButton = uiElements.spinButtonActive!;
 
-    activeButton.on("pointerdown", () => uiElements.buttonPointerDownEffect(activeButton))
+    activeButton.on("pointerdown", () => uiElements.buttonPointerDownEffect(activeButton));
 
-    activeButton.on("pointerup", () => {
-      sound.runSoundLoop(sound.spinSound);
-      uiElements.buttonPointerUpEffect(activeButton);
-      if (!this.isEnoughMoney()) return;
-      uiElements.spinButtonOnPlay();
+    activeButton.on("pointerup", () => this.spinButtonPress());
 
-      this.placeBet();
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !this.idle) uiElements.buttonPointerDownEffect(activeButton);
+    });
 
-      this.spinAnimation(this.slotBuilder.container, this.spinAnimationStop);
-    })
+    window.addEventListener('keyup', (event) => {
+      if (event.key === 'Enter') this.spinButtonPress();
+    });
+
+    sound.toggleSound(this.getIdleState);
   }
 }
