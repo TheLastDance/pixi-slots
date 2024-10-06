@@ -1,8 +1,9 @@
-import { Application, Renderer } from "pixi.js";
+import { Application, Renderer, Container } from "pixi.js";
 import { SlotBuilder } from "./slotBuilder";
 import { CONSTANTS, winMultiplier, SlotItemIdsKeys } from "./data";
 import { randomizer } from "./slotRandomizer";
 import { uiElements } from "./uiElementsBuilder";
+import { sound } from "./Sound";
 
 const {
   SLOTSTRIPEFULLSIZE,
@@ -19,9 +20,11 @@ export class SlotMachine {
   app: Application<Renderer>;
   money: number = INITIALMONEY;
   bet: number = BET;
+  private slotBuilder: SlotBuilder;
 
   constructor(app: Application) {
     this.app = app;
+    this.slotBuilder = new SlotBuilder(this.app);
   }
 
   isEnoughMoney() {
@@ -30,61 +33,63 @@ export class SlotMachine {
 
   placeBet() {
     this.money -= this.bet;
+    uiElements.creditText!.text = `CREDIT ${this.money}`;
   }
 
   calculateWinAmount(symbol: SlotItemIdsKeys) {
     const winning = this.bet * winMultiplier[symbol];
     this.money += winning;
+    uiElements.creditText!.text = `CREDIT ${this.money}`;
+    return winning;
+  }
+
+  spinAnimation(container: Container, onAnimationEnd: () => void) {
+    const containerInitialY = container.y;
+    const containerLastPoint = -SLOTSTRIPEFULLSIZE * (SYMBOLSREELQUANTITY - SYMBOLSPERREELVIEW) + containerInitialY;
+    const speed = SLOTSSPEED; // Scrolling speed
+    let speedChange = 1;
+
+    const ticker = () => {
+      if (container.y > containerLastPoint) {
+        if (speedChange > SPEEDLIMIT) speedChange -= SPEEDSTEP;
+        container.position.y -= speed * speedChange;
+      } else {
+        this.app.ticker.remove(ticker);
+        onAnimationEnd();
+      }
+    }
+
+    this.app.ticker.add(ticker);
+  }
+
+  spinAnimationStop = async () => {
+    sound.spinSound.pause();
+    sound.spinSound.currentTime = 0;
+    if (randomizer.checkWin()) {
+      const amount = this.calculateWinAmount(randomizer.mainLine[0]);
+      sound.runSound(sound.victorySound);
+      await uiElements.runVictoryPopup(this.app, randomizer.mainLine[0], amount);
+    }
+    uiElements.spinButtonOnStop();
+    this.slotBuilder.constructNewSlotMachine();
   }
 
   run() {
-    const reels = new SlotBuilder(this.app);
-    reels.createSlotMachine();
+    this.slotBuilder.createSlotMachine();
 
-    const text = uiElements.creditText!;
     const activeButton = uiElements.spinButtonActive!;
-    const inactiveButton = uiElements.spinButtonInactive!;
 
-    activeButton.on("pointerdown", () => {
-      activeButton.width = 110;
-      activeButton.height = 110;
-    })
+    activeButton.on("pointerdown", () => uiElements.buttonPointerDownEffect(activeButton))
 
     activeButton.on("pointerup", () => {
-      activeButton.width = 120;
-      activeButton.height = 120;
-      activeButton.visible = false;
-      inactiveButton.visible = true;
-
+      sound.runSoundLoop(sound.spinSound);
+      uiElements.buttonPointerUpEffect(activeButton);
       if (!this.isEnoughMoney()) return;
+      uiElements.spinButtonOnPlay();
 
       this.placeBet();
 
-      text.text = `CREDIT ${this.money}`;
-      const container = reels.container;
-      const containerInitialY = container.y;
-      const speed = SLOTSSPEED; // Scrolling speed
-      let speedChange = 1;
-
-      const scrollTicker = () => {
-        const containerLastPoint = -SLOTSTRIPEFULLSIZE * (SYMBOLSREELQUANTITY - SYMBOLSPERREELVIEW) + containerInitialY;
-        if (container.y > containerLastPoint) {
-          if (speedChange > SPEEDLIMIT) speedChange -= SPEEDSTEP;
-          container.position.y -= speed * speedChange;
-        } else {
-          this.app.ticker.remove(scrollTicker);
-          activeButton.visible = true;
-          inactiveButton.visible = false;
-          console.log(randomizer.checkWin(), randomizer.mainLine);
-          if (randomizer.checkWin()) {
-            this.calculateWinAmount(randomizer.mainLine[0]);
-            text.text = `CREDIT ${this.money}`;
-          }
-          reels.constructNewSlotMachine();
-        }
-      }
-
-      this.app.ticker.add(scrollTicker);
+      this.spinAnimation(this.slotBuilder.container, this.spinAnimationStop);
     })
   }
 }

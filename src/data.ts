@@ -1,3 +1,47 @@
+
+// for game manipulation change this constants
+export const CONSTANTS: IConstants = {
+  WIDTH: 120, // size of main sprites
+  HEIGHT: 120, // size of main sprites
+  SLOTSTRIPEFULLSIZE: 157, // size + gap of main sprites
+  SYMBOLSQUANTITY: 5, // unique symbols (plum, orange, lemon, cherries, watermelon)
+  SYMBOLSREELQUANTITY: 20, // symbols quantity in each reel
+  SYMBOLSPERREELVIEW: 3, // 3x3 reel
+  SLOTSSPEED: 8, // animation
+  SPEEDLIMIT: 0.3, // animation
+  SPEEDSTEP: 0.0015, // animation
+  SAMENUMBERSPROBABILITY: 0.1, // probability of winning
+  BET: 1,
+  INITIALMONEY: 100,
+  POPUPTIME: 2000,
+}
+
+// each symbol probabilities on main line
+export const winningProbabilities: { [key: number]: number } = {
+  1: 0.35, // plum
+  2: 0.25, // orange
+  3: 0.2, // lemon
+  4: 0.125, // cherries
+  5: 0.075, // watermelon
+}
+
+// winning multiplier for each symbol
+export const winMultiplier = {
+  1: 3, // plum
+  2: 5, // orange
+  3: 10, // lemon
+  4: 15, // cherries
+  5: 50, // watermelon
+}
+
+export const slotItemIds = {
+  1: "plum",
+  2: "orange",
+  3: "lemon",
+  4: "cherries",
+  5: "watermelon",
+}
+
 interface IAssetsData {
   alias: string,
   src: string,
@@ -18,6 +62,7 @@ interface IConstants {
   SAMENUMBERSPROBABILITY: number,
   BET: number,
   INITIALMONEY: number,
+  POPUPTIME: number,
   [key: string]: number,
 }
 
@@ -61,44 +106,9 @@ export const assetsData: IAssetsData[] = [
   {
     alias: "block-credit",
     src: "./assets/block-credit.png",
+  },
+  {
+    alias: "victory-popup",
+    src: "./assets/victory-popup.jpg",
   }
 ]
-
-export const slotItemIds = {
-  1: "plum",
-  2: "orange",
-  3: "lemon",
-  4: "cherries",
-  5: "watermelon",
-}
-
-export const CONSTANTS: IConstants = {
-  WIDTH: 120,
-  HEIGHT: 120,
-  SLOTSTRIPEFULLSIZE: 157,
-  SYMBOLSQUANTITY: 5,
-  SYMBOLSREELQUANTITY: 20,
-  SYMBOLSPERREELVIEW: 3,
-  SLOTSSPEED: 8,
-  SPEEDLIMIT: 0.3,
-  SPEEDSTEP: 0.0015,
-  SAMENUMBERSPROBABILITY: 0.1,
-  BET: 1,
-  INITIALMONEY: 100,
-}
-
-export const winningProbabilities: { [key: number]: number } = {
-  1: 0.35, // plum
-  2: 0.25, // orange
-  3: 0.2, // lemon
-  4: 0.125, // cherries
-  5: 0.075, // watermelon
-}
-
-export const winMultiplier = {
-  1: 3, // plum
-  2: 5, // orange
-  3: 10, // lemon
-  4: 15, // cherries
-  5: 50, // watermelon
-}

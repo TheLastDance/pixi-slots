@@ -1,13 +1,16 @@
 import { Application, Renderer, Assets, Sprite, Texture, Text, Container } from "pixi.js";
-import { CONSTANTS } from "./data";
+import { CONSTANTS, SlotItemIdsKeys, slotItemIds } from "./data";
 
-const { WIDTH, SLOTSTRIPEFULLSIZE, SYMBOLSPERREELVIEW } = CONSTANTS;
+const { WIDTH, SLOTSTRIPEFULLSIZE, SYMBOLSPERREELVIEW, INITIALMONEY, POPUPTIME } = CONSTANTS;
 
 export class UiElementsBuilder {
   spinButtonActive: Sprite | null = null;
   spinButtonInactive: Sprite | null = null;
   creditText: Text | null = null;
-  private buttonMarginCoef: number = 1.25;
+  private buttonMarginCoef = 1.25;
+  private downScaleButtonPressCoef = 0.9;
+  private popupSize = 450;
+  private victoryContainer = new Container();
 
   async addAsset(name: string): Promise<Texture> {
     const asset = Assets.load(name);
@@ -63,6 +66,30 @@ export class UiElementsBuilder {
     return button;
   }
 
+  buttonPointerDownEffect(button: Sprite) {
+    button.width = WIDTH * this.downScaleButtonPressCoef;
+    button.height = WIDTH * this.downScaleButtonPressCoef;
+  }
+
+  buttonPointerUpEffect(button: Sprite) {
+    button.width = WIDTH;
+    button.height = WIDTH;
+  }
+
+  spinButtonOnPlay() {
+    if (this.spinButtonActive && this.spinButtonInactive) {
+      this.spinButtonActive.visible = false;
+      this.spinButtonInactive.visible = true;
+    }
+  }
+
+  spinButtonOnStop() {
+    if (this.spinButtonActive && this.spinButtonInactive) {
+      this.spinButtonActive.visible = true;
+      this.spinButtonInactive.visible = false;
+    }
+  }
+
   async addDiamondSprite(app: Application, isLeft = true) {
     const diamond = await this.createSprite("diamond");
     app.stage.addChild(diamond);
@@ -81,7 +108,6 @@ export class UiElementsBuilder {
         (SYMBOLSPERREELVIEW * SLOTSTRIPEFULLSIZE) / 2 - diamond.height / 2);
       diamond.angle = 90;
     }
-
 
     return diamond;
   }
@@ -109,6 +135,48 @@ export class UiElementsBuilder {
 
     this.creditText = text;
     return { container, text, block };
+  }
+
+  async runVictoryPopup(app: Application, symbol: SlotItemIdsKeys, amount: number) {
+    const popup = await this.createSprite("victory-popup");
+    const symbolSprite = await this.createSprite(slotItemIds[symbol]);
+
+    popup.width = this.popupSize;
+    popup.height = this.popupSize;
+    symbolSprite.width = WIDTH;
+    symbolSprite.height = WIDTH;
+
+    const text = new Text({
+      text: `YOU WIN ${amount}$ !`,
+      style: {
+        fontFamily: 'Arial',
+        fontSize: 40,
+        fill: "#fff",
+      }
+    });
+
+    symbolSprite.position.set(this.popupSize / 2 - symbolSprite.width / 2, this.popupSize / 2 - symbolSprite.height / 6);
+    text.position.set(this.popupSize / 2 - text.width / 2, this.popupSize - symbolSprite.height / 2);
+    this.victoryContainer.addChild(popup, symbolSprite, text);
+    app.stage.addChild(this.victoryContainer);
+
+    await new Promise(res => setTimeout(res, POPUPTIME));
+
+    text.destroy();
+    symbolSprite.destroy();
+    popup.destroy();
+
+  }
+
+  async buildAllInitialElements(app: Application) {
+    this.addDiamondSprite(app, true);
+    this.addDiamondSprite(app, false);
+    await this.addBackground(app);
+    await this.addCredit(app, INITIALMONEY);
+    await this.addSpinButton(app);
+    await this.addSpinButtonInactive(app);
+    this.victoryContainer.position.set(app.canvas.width / 2 - this.popupSize / 2, app.canvas.height / 2 - this.popupSize / 2);
+    app.stage.addChild(this.victoryContainer);
   }
 
 }

@@ -30,7 +30,6 @@ export class SlotBuilder {
 
     this.reels.forEach((reel, index) => {
       reel.reel[SYMBOLSREELQUANTITY - 2] = mainLine[index];
-      console.log(reel.reel[18]);
       this.container.mask = this.mask;
       reel.createReelContainer();
       reel.container.position.set(index * SLOTSTRIPEFULLSIZE, 0);
