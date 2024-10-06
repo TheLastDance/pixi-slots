@@ -1,5 +1,5 @@
 import { Application, Renderer, Assets, Sprite, Texture, Text, Container } from "pixi.js";
-import { CONSTANTS, SlotItemIdsKeys, slotItemIds } from "./data";
+import { CONSTANTS, SlotItemIdsKeys, slotItemIds } from "../data";
 
 const { WIDTH, SLOTSTRIPEFULLSIZE, SYMBOLSPERREELVIEW, INITIALMONEY, POPUPTIME } = CONSTANTS;
 

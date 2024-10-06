@@ -1,4 +1,4 @@
-import { winningProbabilities, CONSTANTS, SlotItemIdsKeys } from "./data";
+import { winningProbabilities, CONSTANTS, SlotItemIdsKeys } from "../data";
 const { SAMENUMBERSPROBABILITY, SYMBOLSPERREELVIEW } = CONSTANTS;
 
 export class SlotRandomizer {

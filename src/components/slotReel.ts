@@ -1,6 +1,6 @@
 import { Application, Renderer, Container, Assets, Sprite } from "pixi.js";
-import { slotItemIds, SlotItemIdsKeys } from "./data";
-import { CONSTANTS } from "./data";
+import { slotItemIds, SlotItemIdsKeys } from "../data";
+import { CONSTANTS } from "../data";
 
 const {
   WIDTH,

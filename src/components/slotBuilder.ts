@@ -1,6 +1,6 @@
 import { Application, Container, Renderer, Graphics } from "pixi.js";
 import { SlotReel } from "./slotReel";
-import { CONSTANTS } from "./data";
+import { CONSTANTS } from "../data";
 import { randomizer } from "./slotRandomizer";
 
 const { SYMBOLSPERREELVIEW, SLOTSTRIPEFULLSIZE, SYMBOLSREELQUANTITY } = CONSTANTS;

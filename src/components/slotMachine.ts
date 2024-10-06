@@ -1,6 +1,6 @@
 import { Application, Renderer, Container } from "pixi.js";
 import { SlotBuilder } from "./slotBuilder";
-import { CONSTANTS, winMultiplier, SlotItemIdsKeys } from "./data";
+import { CONSTANTS, winMultiplier, SlotItemIdsKeys } from "../data";
 import { randomizer } from "./slotRandomizer";
 import { uiElements } from "./uiElementsBuilder";
 import { sound } from "./sound";

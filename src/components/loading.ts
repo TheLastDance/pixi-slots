@@ -1,5 +1,5 @@
 import { Text, Application, Renderer, Assets } from "pixi.js";
-import { assetsData } from "./data";
+import { assetsData } from "../data";
 
 export class Loading {
   app: Application<Renderer>;
