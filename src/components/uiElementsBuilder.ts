@@ -12,7 +12,7 @@ export class UiElementsBuilder {
   private buttonMarginCoef = 1.25;
   private downScaleButtonPressCoef = 0.9;
   private popupSize = 450;
-  private victoryContainer = new Container();
+  victoryContainer = new Container();
 
   async addAsset(name: string): Promise<Texture> {
     const asset = Assets.load(name);

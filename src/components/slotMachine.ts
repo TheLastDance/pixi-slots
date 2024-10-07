@@ -101,11 +101,11 @@ export class SlotMachine {
     activeButton.on("pointerup", () => this.spinButtonPress());
 
     window.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' && !this.idle) uiElements.buttonPointerDownEffect(activeButton);
+      if (event.key === 'Enter' && !this.idle && uiElements.victoryContainer.children.length === 0) uiElements.buttonPointerDownEffect(activeButton);
     });
 
     window.addEventListener('keyup', (event) => {
-      if (event.key === 'Enter') this.spinButtonPress();
+      if (event.key === 'Enter' && uiElements.victoryContainer.children.length === 0) this.spinButtonPress();
     });
 
     sound.toggleSound(this.getIdleState);
